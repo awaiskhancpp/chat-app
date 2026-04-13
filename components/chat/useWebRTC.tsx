@@ -82,19 +82,6 @@ export function useWebRTC(
     return pc;
   }, [currentUser.id, displayName, sendSignal]);
 
-  const logCall = useCallback(async (
-    status: "missed" | "answered" | "rejected",
-    endedAt?: boolean
-  ) => {
-    if (!callIdRef.current) return;
-    await supabase
-      .from("calls")
-      .update({
-        status,
-        ...(endedAt ? { ended_at: new Date().toISOString() } : {}),
-      })
-      .eq("id", callIdRef.current);
-  }, [supabase]);
 
   const startCall = useCallback(async (type: "video" | "audio") => {
     setCallType(type);
@@ -181,7 +168,7 @@ const acceptCall = useCallback(async () => {
         .from("calls")
         .update({ ended_at: new Date().toISOString() })
         .eq("id", callIdRef.current)
-        .then(({ data }: { data: unknown }) => {
+        .then(() => {
           // fetch the call row to get duration
           supabase
             .from("calls")
@@ -321,7 +308,7 @@ const acceptCall = useCallback(async () => {
       });
 
     return () => { supabase.removeChannel(channel); };
-  }, [currentUser.id, displayName, callType, getMedia, createPeerConnection, localStream, sendSignal, supabase]);
+  }, [currentUser.id, displayName, callType, getMedia, createPeerConnection, localStream, sendSignal, supabase, onCallEnd]);
 
   return {
     callState, callType, incomingCall, remoteStream, localStream,
