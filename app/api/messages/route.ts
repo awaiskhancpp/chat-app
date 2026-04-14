@@ -1,63 +1,69 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from '@/lib/supabase/server'
+import { NextResponse } from 'next/server'
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createClient();
+  const { searchParams } = new URL(request.url)
+  const roomId = searchParams.get('room_id')
 
-  const { data, error } = await supabase
-    .from("messages")
-    .select("*")
-    .order("created_at", { ascending: true })
-    .limit(100);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  let query = supabase
+    .from('messages')
+    .select('*')
+    .order('created_at', { ascending: true })
+    .limit(100)
 
-  return NextResponse.json(data);
+  if (roomId) query = query.eq('room_id', roomId)
+
+  const { data, error } = await query
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json(data)
 }
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const body = await request.json()
+  const { content, attachment_url, attachment_name, is_system, room_id } = body
 
-  const body = await request.json();
-  const { content } = body;
-
-  const isEmptyText =
-  !content || typeof content !== "string" || content.trim().length === 0;
-  const { attachment_url, attachment_name } = body;
-  if (isEmptyText && !attachment_url) {
+  if (!content?.trim() && !attachment_url) {
     return NextResponse.json(
-      { error: "Message or attachment required" },
+      { error: 'Content or attachment is required' },
       { status: 400 }
-    );
+    )
   }
 
+  if (!room_id) {
+    return NextResponse.json({ error: 'room_id is required' }, { status: 400 })
+  }
 
-const { is_system } = body;
-
-const { data, error } = await supabase
-  .from("messages")
-  .insert({
-    content: content?.trim() || null,
-    user_id: user.id,
-    user_email: user.email ?? "",
-    user_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
-    attachment_url: attachment_url ?? null,
-    attachment_name: attachment_name ?? null,
-    is_system: is_system ?? false,
-  })
+  const { data, error } = await supabase
+    .from('messages')
+    .insert({
+      content: content?.trim() || null,
+      user_id: user.id,
+      user_email: user.email ?? '',
+      user_name:
+        user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
+      attachment_url: attachment_url ?? null,
+      attachment_name: attachment_name ?? null,
+      is_system: is_system ?? false,
+      room_id,
+    })
     .select()
-    .single();
+    .single()
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  return NextResponse.json(data, { status: 201 });
+  return NextResponse.json(data, { status: 201 })
 }

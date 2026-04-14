@@ -40,6 +40,7 @@ export async function middleware(request: NextRequest) {
   if (user && isAuthRoute && !pathname.startsWith("/auth/callback")) {
     return NextResponse.redirect(new URL("/chat", request.url));
   }
+  await supabase.auth.getUser();
 
   return supabaseResponse;
 }

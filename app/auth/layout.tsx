@@ -1,19 +1,10 @@
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "var(--bg)",
-      padding: "24px",
-    }}>
-      <div style={{
-        position: "fixed",
-        inset: 0,
-        background: "radial-gradient(ellipse 60% 50% at 50% -10%, rgba(124,106,245,0.15), transparent)",
-        pointerEvents: "none",
-      }} />
+    <div className="relative flex min-h-screen items-center justify-center bg-wa-bg px-6">
+      <div
+        className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_-10%,rgba(0,168,132,0.12),transparent)]"
+        aria-hidden
+      />
       {children}
     </div>
   );

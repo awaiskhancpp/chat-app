@@ -1,81 +1,131 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-:root {
-  --bg: #0a0a0f;
-  --bg-2: #111118;
-  --bg-3: #1a1a24;
-  --bg-4: #22222e;
-  --border: #2a2a38;
-  --border-2: #3a3a50;
-  --accent: #7c6af5;
-  --accent-2: #a594f9;
-  --accent-glow: rgba(124, 106, 245, 0.25);
-  --text: #e8e8f0;
-  --text-2: #9898b0;
-  --text-3: #5a5a72;
-  --danger: #f05a5a;
-  --success: #4fd18a;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --radius: 10px;
-  --radius-lg: 16px;
+/* Tailwind CSS v4 — must use this import; @tailwind directives do not run with @tailwindcss/postcss */
+@import "tailwindcss";
+
+@theme {
+  /* Maps to bg-wa-* , text-wa-* , border-wa-* , etc. */
+  --color-wa-bg: #111b21;
+  --color-wa-panel: #202c33;
+  --color-wa-panel2: #2a3942;
+  --color-wa-bubble-out: #005c4b;
+  --color-wa-bubble-in: #202c33;
+  --color-wa-green: #00a884;
+  --color-wa-green-hover: #06cf9c;
+  --color-wa-text: #e9edef;
+  --color-wa-text2: #8696a0;
+  --color-wa-border: #2a3942;
+  --color-wa-input: #2a3942;
+  --color-wa-danger: #f15c6d;
+  --color-wa-icon: #aebac1;
+  --color-wa-hover: #2a3942;
+  --color-wa-active: #2d3b43;
+  --color-wa-divider: #222e35;
+
+  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  --animate-fade-in: fade-in 0.15s ease-out both;
+  --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
+  --animate-slide-up: slide-up 0.2s ease-out both;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-html, body {
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-display);
-  -webkit-font-smoothing: antialiased;
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 
-a { color: inherit; text-decoration: none; }
-
-button {
-  font-family: var(--font-display);
-  cursor: pointer;
-  border: none;
-  outline: none;
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-input, textarea {
-  font-family: var(--font-display);
-  outline: none;
-}
+@layer base {
+  :root {
+    --wa-bg: #111b21;
+    --wa-panel: #202c33;
+    --wa-panel-header: #202c33;
+    --wa-panel-2: #2a3942;
+    --wa-bubble-out: #005c4b;
+    --wa-bubble-in: #202c33;
+    --wa-green: #00a884;
+    --wa-green-hover: #06cf9c;
+    --wa-text: #e9edef;
+    --wa-text-2: #8696a0;
+    --wa-border: #2a3942;
+    --wa-input: #2a3942;
+    --wa-danger: #f15c6d;
+    --wa-icon: #aebac1;
+    --wa-search-bg: #2a3942;
+    --wa-hover: #2a3942;
+    --wa-active: #2d3b43;
+    --wa-divider: #222e35;
+  }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 999px; }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-/* Utility classes */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
+  * {
+    margin: 0;
+    padding: 0;
+  }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  html,
+  body {
+    height: 100%;
+    background: var(--wa-bg);
+    color: var(--wa-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-size: 15px;
+  }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-  50% { box-shadow: 0 0 20px 4px var(--accent-glow); }
-}
+  button {
+    font: inherit;
+    color: inherit;
+  }
 
-.animate-in {
-  animation: fadeIn 0.25s ease forwards;
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #374045;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4a5568;
+  }
+
+  ::selection {
+    background: rgba(0, 168, 132, 0.25);
+  }
 }
