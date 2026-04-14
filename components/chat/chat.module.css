@@ -480,8 +480,11 @@
 .attachmentFile:hover { text-decoration: underline; }
 .attachmentVideo {
   display: block;
-  width: 280px;
+  width: 100%px;
+  max-width: 280px;
   max-height: 200px;
+  height: auto;
+  object-fit: contain;
   border-radius: 8px;
   background: #000;
   outline: none;
