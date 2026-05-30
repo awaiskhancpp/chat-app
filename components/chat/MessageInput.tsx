@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Link, Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface Props {
@@ -44,11 +45,10 @@ export default function MessageInput({ onSend, disabled }: Props) {
   const isImage = file?.type.startsWith("image/");
 
   return (
-    <div className="shrink-0 border-t border-wa-border bg-wa-panel2 px-4 py-3">
+    <div className="shrink-0 border-t border-wa-border bg-wa-panel2 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-4 sm:py-3">
       {file && (
         <div className="mb-2 flex items-center gap-2 rounded-lg border border-wa-border bg-wa-panel px-3 py-2 text-sm text-wa-text2">
           {isImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={URL.createObjectURL(file)}
               alt={file.name}
@@ -79,7 +79,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-wa-border bg-wa-panel text-lg text-wa-text2"
           aria-label="Attach file"
         >
-          <span aria-hidden>{'\u{1F4CE}'}</span>
+          <Link className="h-5 w-5" aria-hidden />
         </button>
         <input
           ref={fileRef}
@@ -114,7 +114,11 @@ export default function MessageInput({ onSend, disabled }: Props) {
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-wa-green to-[#1a9f88] text-lg font-semibold text-white transition-opacity disabled:opacity-40"
           aria-label="Send"
         >
-          {uploading ? "..." : "\u2191"}
+          {uploading ? (
+            <span className="text-sm">…</span>
+          ) : (
+            <Send className="h-5 w-5" aria-hidden />
+          )}
         </button>
       </form>
     </div>

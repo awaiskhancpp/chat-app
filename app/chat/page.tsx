@@ -7,19 +7,27 @@ export default async function ChatPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const { data: profiles, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .neq('id', user.id)
-    .order('full_name', { ascending: true })
-  if (error) console.error('profiles fetch error:', error.message)
+  const [{ data: profiles, error }, { data: ownProfile }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('*')
+      .neq('id', user.id)
+      .order('full_name', { ascending: true }),
+    supabase.from('profiles').select('*').eq('id', user.id).single(),
+  ])
 
+  if (error) console.error('profiles fetch error:', error.message)
 
   const currentUser = {
     id: user.id,
     email: user.email ?? '',
-    name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
-    avatar_url: user.user_metadata?.avatar_url ?? null,
+    name:
+      ownProfile?.full_name ??
+      user.user_metadata?.full_name ??
+      user.user_metadata?.name ??
+      null,
+    avatar_url:
+      ownProfile?.avatar_url ?? user.user_metadata?.avatar_url ?? null,
   }
 
   return <ChatLayout currentUser={currentUser} allUsers={profiles ?? []} />;
