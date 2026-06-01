@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Mic, MicOff, Video, VideoOff, PhoneOff , PhoneCall} from "lucide-react";
 
 interface Props {
   callState: "calling" | "receiving" | "in-call";
@@ -22,6 +23,7 @@ export default function CallModal({
   incomingName, isMuted, isCamOff,
   onAccept, onReject, onEnd, onToggleMute, onToggleCam,
 }: Props) {
+  const [callDuration, setCallDuration] = useState(0);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -32,6 +34,30 @@ export default function CallModal({
   useEffect(() => {
     if (remoteVideoRef.current && remoteStream) remoteVideoRef.current.srcObject = remoteStream;
   }, [remoteStream]);
+  useEffect(()=>{
+    if(callState !== "in-call")return 
+    const interval = setInterval(() => {
+    setCallDuration(prev => prev + 1)
+  }, 1000)
+
+  return () => clearInterval(interval)
+
+  },[callState])
+  useEffect(() => {
+  if (callState !== "in-call") {
+    setCallDuration(0)
+  }
+}, [callState])
+  const formatTime = (seconds: number) => {
+  const hrs = Math.floor(seconds / 3600)
+  const mins = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+  
+  if (hrs > 0) {
+    return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+  return `${mins}:${secs.toString().padStart(2, '0')}`
+}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
@@ -57,7 +83,7 @@ export default function CallModal({
               )}
               <button type="button" onClick={callState === "receiving" ? onReject : onEnd}
                 className="rounded-full bg-wa-danger px-6 py-2 font-semibold text-white">
-                {callState === "receiving" ? "Decline" : "Cancel"}
+                {callState === "receiving" ? "Decline" : <PhoneOff/>}
               </button>
             </div>
           </div>
@@ -75,10 +101,10 @@ export default function CallModal({
             ) : (
               <div className="flex flex-col items-center gap-3 p-10">
                 <div className="text-5xl" aria-hidden>
-                  {"\u266A"}
+                < PhoneCall/>
                 </div>
                 <p className="text-wa-text2">Audio call in progress</p>
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                <p className="text-2xl font-bold text-white/80">{formatTime(callDuration)}</p>
                 <audio ref={remoteVideoRef as any} autoPlay />
               </div>
             )}
@@ -88,19 +114,19 @@ export default function CallModal({
                 className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold ${
                   isMuted ? "bg-wa-green text-white" : "bg-wa-panel text-wa-text"
                 }`}>
-                {isMuted ? "unmute" : "mute"}
+                {isMuted ? <MicOff/> : <Mic/>}
               </button>
               {callType === "video" && (
                 <button type="button" onClick={onToggleCam}
                   className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold ${
                     isCamOff ? "bg-wa-green text-white" : "bg-wa-panel text-wa-text"
                   }`}>
-                  {isCamOff ? "cam on" : "cam off"}
+                  {isCamOff ? <VideoOff/> : <Video/>}
                 </button>
               )}
               <button type="button" onClick={onEnd}
-                className="flex h-14 w-14 items-center justify-center rounded-full bg-wa-danger text-xl font-bold text-white">
-                X
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-wa-danger text-xl font-bold text-white">
+                <PhoneOff/>
               </button>
             </div>
           </>

@@ -38,7 +38,6 @@ export default function ChatLayout({ currentUser: initialUser, allUsers }: Props
     setCurrentUser((prev) => ({ ...prev, ...updates }))
   }
 
-  /** Supabase Realtime: keep sidebar “last seen” / profile fields live */
   useEffect(() => {
     const channel = supabase
       .channel('profiles-updates')
@@ -188,10 +187,10 @@ export default function ChatLayout({ currentUser: initialUser, allUsers }: Props
               aria-hidden
             />
             <div className="max-w-sm text-center">
-              <p className="mb-1.5 text-lg font-semibold text-wa-text">
+              <p className="mb-1.5 text-lg font-semibold text-white/70">
                 ChatApp
               </p>
-              <p className="text-sm text-wa-text2">
+              <p className="text-sm text-white/50">
                 {profiles.length === 0
                   ? 'No other users yet. Share the app with someone!'
                   : 'Select a chat to start messaging'}

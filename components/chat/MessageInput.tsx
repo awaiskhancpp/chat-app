@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Link, Send } from "lucide-react";
+import { Link, Send, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface Props {
@@ -55,9 +55,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
               className="h-10 w-10 rounded object-cover"
             />
           ) : (
-            <span className="text-lg" aria-hidden>
-              {'\u{1F4CE}'}
-            </span>
+            <Link/>
           )}
           <span className="flex-1 truncate">{file.name}</span>
           <button
@@ -66,7 +64,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
             className="rounded px-1 text-wa-danger hover:underline"
             aria-label="Remove attachment"
           >
-            X
+            <X/>
           </button>
         </div>
       )}

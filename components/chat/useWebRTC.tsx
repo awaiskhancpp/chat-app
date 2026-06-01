@@ -31,11 +31,6 @@ function inboxChannelName(userId: string) {
   return `call-inbox-${userId}`;
 }
 
-/**
- * WebRTC + Supabase Realtime:
- * - `call-inbox-{userId}` (broadcast): ring / cancel / reject so the callee does not need that chat open.
- * - `webrtc-pair-{sorted ids}` (broadcast): offer / answer / ICE / accept / end while both are in the call flow.
- */
 export function useWebRTC(
   currentUser: { id: string; name: string | null; email: string },
   onCallEnd: (summary: string) => void
@@ -52,6 +47,7 @@ export function useWebRTC(
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isCamOff, setIsCamOff] = useState(false);
+  const [timeLeft,setTimeLeft] = useState(40);
 
   const localStreamRef = useRef<MediaStream | null>(null);
   useEffect(() => {
@@ -75,6 +71,7 @@ export function useWebRTC(
   useEffect(() => {
     callTypeRef.current = callType;
   }, [callType]);
+  
 
   const sendOnPair = useCallback((signal: CallSignal) => {
     pairChannelRef.current?.send({
@@ -84,7 +81,6 @@ export function useWebRTC(
     });
   }, []);
 
-  /** Deliver ring / cancel / reject to one user’s personal Realtime channel (always subscribed in this hook). */
   const sendToInbox = useCallback((targetUserId: string, signal: CallSignal) => {
     const ch = supabase.channel(inboxChannelName(targetUserId), {
       config: { broadcast: { self: false } },
@@ -249,6 +245,7 @@ export function useWebRTC(
         });
       }
     }
+    
 
     if (callIdRef.current) {
       supabase
@@ -288,7 +285,20 @@ export function useWebRTC(
     remoteUserRef.current = null;
     setIncomingCall(null);
   }, [currentUser.id, displayName, sendOnPair, sendToInbox, signalingPeerId, supabase]);
-
+  useEffect(()=>{
+    if(callState!=='calling' && callState!=='receiving'){
+      setTimeLeft(40);
+      return
+    }
+    if(timeLeft<=0){
+      endCall();
+      return;
+    }
+    const timer=setTimeout(()=>{
+      setTimeLeft((prev)=>prev-1)
+    },1000)
+    return ()=>(clearInterval(timer))
+  },[callState, timeLeft, endCall])
   const toggleMute = useCallback(() => {
     localStream?.getAudioTracks().forEach((t) => {
       t.enabled = !t.enabled;
@@ -303,7 +313,6 @@ export function useWebRTC(
     setIsCamOff((c) => !c);
   }, [localStream]);
 
-  // Personal inbox: incoming call-request + control when peer is not on pair channel yet
   useEffect(() => {
     const inbox = supabase.channel(inboxChannelName(currentUser.id), {
       config: { broadcast: { self: false } },
@@ -372,7 +381,6 @@ export function useWebRTC(
     };
   }, [currentUser.id, supabase]);
 
-  // Pair channel: SDP / ICE / accept / end while in a session
   useEffect(() => {
     if (!signalingPeerId) {
       pairChannelRef.current = null;

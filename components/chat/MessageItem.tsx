@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Message } from '@/types'
+import {Link, Trash} from 'lucide-react'
 
 interface Props {
   message: Message
@@ -27,30 +28,24 @@ function SeenStatus({
   const muted = isOwnBubble ? 'text-white/50' : 'text-wa-text2'
   if (message.seen_at)
     return (
-      <span className="text-[0.7rem] text-wa-green" aria-label="Read">
+      <span className="text-[0.6rem] text-wa-green" aria-label="Read">
         {'\u2713\u2713'}
       </span>
     )
   if (message.delivered_at)
     return (
-      <span className={`text-[0.7rem] ${muted}`} aria-label="Delivered">
+      <span className={`text-[0.6rem] ${muted}`} aria-label="Delivered">
         {'\u2713\u2713'}
       </span>
     )
   return (
-    <span className={`text-[0.7rem] opacity-60 ${muted}`} aria-label="Sent">
+    <span className={`text-[0.6rem] opacity-60 ${muted}`} aria-label="Sent">
       {'\u2713'}
     </span>
   )
 }
 
-function IconPaperclip({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
+
 
 export default function MessageItem({ message, isOwn, onEdit, onDelete }: Props) {
   const [editing, setEditing] = useState(false)
@@ -84,7 +79,7 @@ export default function MessageItem({ message, isOwn, onEdit, onDelete }: Props)
   }
 
   const bubbleShell =
-    'shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] animate-fade-in px-3.5 py-2 text-sm leading-relaxed'
+    'shadow-[0_1px_0.5px_rgba(11,20,26,0.13)] animate-fade-in px-2 py-1 rounded-lg text-sm leading-relaxed'
 
   return (
     <div
@@ -116,7 +111,7 @@ export default function MessageItem({ message, isOwn, onEdit, onDelete }: Props)
                   onClick={() => onDelete(message.id)}
                   className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-wa-danger text-[0.7rem] font-bold text-white"
                 >
-                  OK
+                  <Trash className='size-4'/>
                 </button>
                 <button
                   type="button"
@@ -133,9 +128,7 @@ export default function MessageItem({ message, isOwn, onEdit, onDelete }: Props)
                 title="Delete"
                 className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-wa-border bg-wa-panel2 text-wa-danger"
               >
-                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
+                <Trash className='size-4'/>
               </button>
             )}
           </div>
@@ -198,14 +191,13 @@ export default function MessageItem({ message, isOwn, onEdit, onDelete }: Props)
             )}
 
             {message.attachment_url && (
-              <div className={message.content ? 'mt-2' : ''}>
+              <div className={message.content ? 'mt-3' : ''}>
                 {/\.(jpg|jpeg|png|gif|webp)$/i.test(message.attachment_url) ? (
                   <a
                     href={message.attachment_url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={message.attachment_url}
                       alt={message.attachment_name ?? 'image'}
@@ -221,9 +213,9 @@ export default function MessageItem({ message, isOwn, onEdit, onDelete }: Props)
                     href={message.attachment_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-[0.8125rem] text-wa-text no-underline"
+                    className="flex items-center gap-2 rounded-lg bg-white/10  text-[0.8125rem] text-wa-text no-underline"
                   >
-                    <IconPaperclip className="h-4 w-4 shrink-0 opacity-80" />
+                    <Link className="h-4 w-4 shrink-0 opacity-80" />
                     {message.attachment_name ?? 'Download file'}
                   </a>
                 )}

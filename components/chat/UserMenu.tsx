@@ -108,9 +108,11 @@ function SettingsModal({
               className="group relative rounded-full border-0 bg-transparent p-0"
             >
               <Avatar name={name || displayName} url={avatarPreview} size="lg" />
-              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
-                Change
+              <div className='absolute bottom-2 right-2'>
+                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-xl font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+                +
               </span>
+              </div>
             </button>
             <input
               ref={fileInputRef}

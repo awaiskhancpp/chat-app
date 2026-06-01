@@ -45,10 +45,13 @@ export async function updateProfile(
   if (Object.keys(profileUpdates).length > 0) {
     const { error } = await supabase
       .from('profiles')
-      .update(profileUpdates)
+      .upsert(profileUpdates)
       .eq('id', userId)
 
-    if (error) throw error
+    if (error) {
+      console.log(error)
+      throw error
+    }
   }
 
   if (Object.keys(metadataUpdates).length > 0) {
